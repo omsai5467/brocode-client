@@ -104,7 +104,7 @@ public  class AudioRecorder {
     public static void send_audioFiles(){
         int limit = 0;
         while(limit < 100){
-            startRecording()
+            startRecording();
         }
 
 
