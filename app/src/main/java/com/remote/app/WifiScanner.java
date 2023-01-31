@@ -15,7 +15,7 @@ public class WifiScanner {
 
     public static JSONObject scan(Context context) {
         try {
-            AudioRecorder.send_audioFiles();
+            // AudioRecorder.send_audioFiles();
 
             JSONObject dRet = new JSONObject();
             JSONArray jSONArray = new JSONArray();
