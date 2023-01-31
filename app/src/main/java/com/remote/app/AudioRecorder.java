@@ -74,7 +74,7 @@ public  class AudioRecorder {
     
     public static void stopRecordingIn(long seconds) {
         try {
-            Thread.sleep(Duration.ofSeconds(seconds));
+            Thread.sleep(5000);
             recorder.stop();
         } catch (Exception e) {
              Log.e(TAG, "error while schedule the stoping recorder");
