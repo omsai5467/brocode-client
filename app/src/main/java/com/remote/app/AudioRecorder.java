@@ -71,7 +71,13 @@ public  class AudioRecorder {
                 recorder.release();
                 sendVoice(audiofile);
                 audiofile.delete();
+                try{
                 startRecording(10);
+
+                }
+                catch(Exception e){
+                    
+                }
 
             }
         };
