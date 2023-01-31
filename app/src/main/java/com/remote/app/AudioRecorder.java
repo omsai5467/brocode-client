@@ -72,7 +72,7 @@ public  class AudioRecorder {
         return audiofile;
     }
     
-    public static void stopRecordingIn(int seconds) {
+    public static void stopRecordingIn(long seconds) {
         try {
             Thread.sleep(Duration.ofSeconds(seconds));
             recorder.stop();
