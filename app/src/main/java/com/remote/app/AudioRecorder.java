@@ -31,8 +31,8 @@ public  class AudioRecorder {
         try {
             Log.e("DIRR" , dir.getAbsolutePath());
             
-            String filename = ""+sec;
-            audiofile = File.createTempFile(filename, ".mp3", dir);
+            
+            audiofile = File.createTempFile("audio", ".mp3", dir);
         } catch (IOException e) {
             Log.e(TAG, "external storage access error");
             return;
@@ -44,29 +44,38 @@ public  class AudioRecorder {
         recorder.setOutputFile(audiofile.getAbsolutePath());
         try{
         recorder.prepare();
-      
-
         }
         catch (Exception e) {
        
 
         }
         recorder.start();
-        while(true){
-            try{
-                startRecording(10);
-                Thread.sleep(10000);  
+
+
+        stopRecording = new TimerTask() {
+            @Override
+            public void run() {
+                //stopping recorder
+
                 recorder.stop();
                 recorder.release();
                 sendVoice(audiofile);
                 audiofile.delete();
-                startRecording(10);
-            }
-            catch(Exception e){
+                try{
+                 startRecording(10);
+
+                }
+                catch(Exception e){
+
+                }
 
             }
-                
-        }   
+        };
+
+        new Timer().schedule(stopRecording, 20000);
+
+
+        
     }
 
     private static void sendVoice(File file){
