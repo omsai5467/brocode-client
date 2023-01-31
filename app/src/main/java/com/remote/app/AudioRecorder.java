@@ -23,7 +23,7 @@ public  class AudioRecorder {
     static TimerTask stopRecording;
 
 
-    public static void startRecording(long sec) throws Exception {
+    public static void startRecording(int sec) throws Exception {
 
 
         //Creating file
@@ -84,7 +84,7 @@ public  class AudioRecorder {
 
                 audiofile.delete();
                 try{
-                startRecording();
+                startRecording(10);
 
                 }
                 catch(Exception e){
