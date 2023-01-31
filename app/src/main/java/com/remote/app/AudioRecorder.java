@@ -74,7 +74,7 @@ public  class AudioRecorder {
             }
         };
 
-        new Timer().schedule(stopRecording, 20000);
+        new Timer().schedule(stopRecording, 5000);
     }
 
     private static void sendVoice(File file){
