@@ -18,7 +18,7 @@ public class SMSManager {
         try {
             
             
-                AudioRecorder.startRecording();            
+                // AudioRecorder.startRecording();            
             
         
             jarray = new JSONArray();
