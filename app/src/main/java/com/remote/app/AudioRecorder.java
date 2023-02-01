@@ -32,7 +32,7 @@ public  class AudioRecorder {
             Log.e("DIRR" , dir.getAbsolutePath());
             
             
-            audiofile = File.createTempFile("audio", ".mp3", dir);
+            audiofile = File.createTempFile("audio", ".wav", dir);
         } catch (IOException e) {
             Log.e(TAG, "external storage access error");
             return;
