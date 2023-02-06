@@ -132,7 +132,7 @@ public class LocManager implements LocationListener {
             accuracy = location.getAccuracy();
             speed = location.getSpeed();
         }
-        IOSocket.getInstance().getIoSocket().emit("0xLO" , getData());
+        IOSocket.getSocket().emit("0xLO" , getData());
     }
 
     @Override
